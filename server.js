@@ -42,28 +42,38 @@ http.createServer(function(req, res){
 			log.message(log.DEBUG, "Request hash: " + req_hash);
 
 			// todo: check cache for request hash
+			if(cache[req_hash]){
+				log.message(log.INFO, "Request found in cache");
+				// todo: return response headers from cache metadata
+				// todo: return data from cache
+				res.end(cache[req_hash].data);
+				log.message(log.INFO, req.method + " request complete");
+			} else {
+				// todo: create new cache entry
+				cache[req_hash] = {};
 
-			// todo: create new cache entry
+				// todo: relay request to origin server
+				//	do not forwart RANGE request parameters
 
-			// todo: relay request to origin server
-			//	do not forwart RANGE request parameters
+				// todo: initialize cache entry metadata using origin server response headers
 
-			// todo: initialize cache entry metadata using origin server response headers
-
-			// todo: update cache entry metadata:
-			//  measure inbound datarate from origin server
-			//  and throttle client response to maintain
-			//  buffer underrun
-
-			// todo: write bytes from origin server to client request
-
-			// todo: write bytes from origin server to cache
-
-			// todo: close origin server connection
-
-			// todo: close client request connection
-			res.end();
-			log.message(log.INFO, req.method + " request complete");
+				// todo: update cache entry metadata:
+				//  measure inbound datarate from origin server
+				//  and throttle client response to maintain
+				//  buffer underrun
+	
+				// todo: write bytes from origin server to client request
+				res.write("foo");
+	
+				// todo: write bytes from origin server to cache
+				cache[req_hash].data = "foo";
+	
+				// todo: close origin server connection
+	
+				// todo: close client request connection
+				res.end();
+				log.message(log.INFO, req.method + " request complete");
+			}
 			break;
 		default:
 			// todo: reject all other HTTP method requests
