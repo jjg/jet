@@ -10,42 +10,49 @@ log.level = config.LOG_LEVEL;
 http.createServer(function(req, res){
 
 	// todo: set response headers necissary for CORS support
-	res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+	res.setHeader("Access-Control-Allow-Methods","GET,OPTIONS");
 	res.setHeader("Access-Control-Allow-Headers","*");
 	res.setHeader("Access-Control-Allow-Origin","*");
 
-	// todo: determine HTTP method
+	// determine HTTP method
+	log.message(log.INFO, "Processing " + req.method + " request");
+	switch(req.method){
+		case "OPTIONS":
+			// handle OPTIONS request
+			res.writeHead();
+			res.end();
+			break;
+		case "GET":
+			// todo: handle GET request
 
-	// todo: handle OPTIONS request
+			// todo: generate hash of relevant request parameters (URL, headers, etc.)
 
-	// todo: reject all other HTTP method requests
+			// todo: check cache for request hash
 
-	// todo: handle GET request
+			// todo: create new cache entry
 
-	// todo: generate hash of relevant request parameters (URL, headers, etc.)
+			// todo: relay request to origin server
+			//	do not forwart RANGE request parameters
 
-	// todo: check cache for request hash
+			// todo: initialize cache entry metadata using origin server response headers
 
-	// todo: create new cache entry
+			// todo: update cache entry metadata:
+			//  measure inbound datarate from origin server
+			//  and throttle client response to maintain
+			//  buffer underrun
 
-	// todo: relay request to origin server
-	//	do not forwart RANGE request parameters
+			// todo: write bytes from origin server to client request
 
-	// todo: initialize cache entry metadata using origin server response headers
+			// todo: write bytes from origin server to cache
 
-	// todo: update cache entry metadata:
-	//  measure inbound datarate from origin server
-	//  and throttle client response to maintain
-	//  buffer underrun
+			// todo: close origin server connection
 
-	// todo: write bytes from origin server to client request
-
-	// todo: write bytes from origin server to cache
-
-	// todo: close origin server connection
-
-	// todo: close client request connection
-
+			// todo: close client request connection
+			break;
+		default:
+			// todo: reject all other HTTP method requests
+			break;
+	}
 }).listen(config.SERVER_PORT);
 
 log.message(log.INFO, "Starting jet on port " + config.SERVER_PORT + ".");
