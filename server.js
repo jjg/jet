@@ -1,5 +1,4 @@
 var http = require("http");
-var https = require("https");
 var crypto = require("crypto");
 var url = require("url");
 var RQ = require("rq.js");
@@ -59,13 +58,13 @@ http.createServer(function(req, res){
 				// todo: do not forward RANGE request headers 
 				var origin_req_options = {
 					hostname: config.ORIGIN_SERVER_HOST,	// set via config, alternatively req.hostname,
-					port: 443,								// hard-coded for HTTPS, alternatively req.port,
+					port: config.ORIGIN_SERVER_PORT,		// set via config, alternatively req.port,
 					path: req.url,
 					headers: req.headers,
 					method: "GET"
 				};
 				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
-				var origin_req = https.request(origin_req_options, function(origin_res){
+				var origin_req = http.request(origin_req_options, function(origin_res){
 					log.message(log.DEBUG, "Origin server request status: " + origin_res.statusCode);
 					// todo: if origin status isn't good, end request
 					// initialize cache entry metadata using origin server response headers
@@ -100,7 +99,12 @@ http.createServer(function(req, res){
 						res.end();
 						log.message(log.INFO, req.method + " request comlete");
 					});
+
 				});
+				origin_req.on("error", function(error){
+					log.message(log.ERROR, "Origin server request error: " + error);
+				});
+
 				origin_req.end();
 			}
 			break;
