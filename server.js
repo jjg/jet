@@ -76,7 +76,9 @@ http.createServer(function(req, res){
 			}
 			break;
 		default:
-			// todo: reject all other HTTP method requests
+			// reject all other HTTP method requests
+			res.statusCode = 405;	// METHOD NOT ALLOWED
+			res.end();
 			break;
 	}
 }).listen(config.SERVER_PORT);
