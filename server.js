@@ -43,6 +43,7 @@ http.createServer(function(req, res){
 			// check cache for request hash
 			if(cache[req_hash]){
 				log.message(log.INFO, "Request found in cache");
+				// todo: handle RANGE requests
 				// return response headers from cache metadata
 				res.setHeader("Content-Length", cache[req_hash].content_length);
 				res.setHeader("Content-Type", cache[req_hash].content_type);
