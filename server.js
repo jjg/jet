@@ -38,12 +38,10 @@ http.createServer(function(req, res){
 			);
 			var req_hash = shasum.digest("hex");
 			log.message(log.DEBUG, "Request hash: " + req_hash);
-
 			// check cache for request hash
 			if(cache[req_hash]){
 				log.message(log.INFO, "Cache HIT");
-
-				// todo: handle RANGE correctly
+				// handle RANGE correctly
 				if(req.headers.range){
 					log.message(log.INFO, "RANGE request: " + req.headers.range);
 					var range_string = req.headers.range;
@@ -77,15 +75,12 @@ http.createServer(function(req, res){
 				log.message(log.INFO, "Cache MISS");
 				// create new cache entry
 				cache[req_hash] = {};
-
 				// relay request to origin server
-				// todo: do not forward RANGE request headers 
-
 				var origin_req_options = {
 					hostname: config.ORIGIN_SERVER_HOST,	// set via config, alternatively req.hostname,
 					port: config.ORIGIN_SERVER_PORT,		// set via config, alternatively req.port,
 					path: req.url,
-					//headers: req.headers,
+					//headers: req.headers,					// todo: include headers, just not RANGE
 					method: "GET"
 				};
 				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
@@ -100,12 +95,6 @@ http.createServer(function(req, res){
 					// write headers from origin to client
 					res.setHeader("Content-Length", cache[req_hash].content_length);
 					res.setHeader("Content-Type", cache[req_hash].content_type);
-
-					// todo: update cache entry metadata:
-					//  measure inbound datarate from origin server
-					//  and throttle client response to maintain
-					//  buffer underrun
-	
 					origin_res.on("data", function(chunk){
 						//log.message(log.DEBUG, "Received " + chunk.length + " bytes from origin server");	
 						// write bytes from origin server to client request
@@ -114,7 +103,6 @@ http.createServer(function(req, res){
 						cache[req_hash].data = new Buffer.concat([cache[req_hash].data, chunk]);
 						// todo: use a message to trigger res.write() vs tightly bound like above? 
 					});
-
 					origin_res.on("end", function(){
 						log.message(log.INFO, "Origin server response ended");
 						// todo: close origin server connection?
@@ -122,19 +110,16 @@ http.createServer(function(req, res){
 						res.end();
 						log.message(log.INFO, req.method + " request complete");
 					});
-
 					origin_res.on("error", function(error){
 						log.message(log.ERROR, "Origin server response error: " + error);
 						res.statusCode = 500;
 						res.end();
 						log.message(log.INFO, req.method + " request comlete");
 					});
-
 				});
 				origin_req.on("error", function(error){
 					log.message(log.ERROR, "Origin server request error: " + error);
 				});
-
 				origin_req.end();
 			}
 			break;
