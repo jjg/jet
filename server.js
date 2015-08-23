@@ -48,7 +48,7 @@ http.createServer(function(req, res){
 					var range_parts = range_string.substring(range_string.indexOf("=")+1).split("-");
 					var range_begin = range_parts[0];
 					// todo: troubleshoot why open-ended RANGE results in content-length mismatch error...
-					var range_end = 9050675; //cache[req_hash].content_length - 1;
+					var range_end = parseInt(cache[req_hash].content_length); //9050675; //cache[req_hash].content_length - 1;
 					if(range_parts[1] && range_parts[1].length > 0){
 						range_end = range_parts[1];
 					}
