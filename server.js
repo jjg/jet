@@ -47,13 +47,15 @@ http.createServer(function(req, res){
 					var range_string = req.headers.range;
 					var range_parts = range_string.substring(range_string.indexOf("=")+1).split("-");
 					var range_begin = range_parts[0];
-					var range_end = cache[req_hash].content_length - 1;
+					// todo: troubleshoot why open-ended RANGE results in content-length mismatch error...
+					var range_end = 9050675; //cache[req_hash].content_length - 1;
 					if(range_parts[1] && range_parts[1].length > 0){
 						range_end = range_parts[1];
 					}
 					log.message(log.DEBUG, "Range begin: " + range_begin);
 					log.message(log.DEBUG, "Range end: " + range_end);
 					// set the headers and status
+					log.message(log.DEBUG, "content_length: " + cache[req_hash].content_length);
 					res.setHeader("Content-Range", "bytes " + range_begin + "-" + range_end + "/" +  cache[req_hash].content_length);
 					res.setHeader("Content-Length", cache[req_hash].content_length);
 					res.setHeader("Accept-Ranges", "bytes");
