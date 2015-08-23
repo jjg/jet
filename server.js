@@ -1,8 +1,9 @@
 var https = require("https");
 var crypto = require("crypto");
 var url = require("url");
+var RQ = require("rq.js");
 var config = require("./config.js");
-var log = require("./jlog.js");
+var log = require("jlog.js");
 log.level = config.LOG_LEVEL;
 
 log.message(log.INFO, "jet starting up...");
