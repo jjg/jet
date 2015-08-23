@@ -1,3 +1,4 @@
+var http = require("http");
 var https = require("https");
 var crypto = require("crypto");
 var url = require("url");
@@ -6,36 +7,45 @@ var config = require("./config.js");
 var log = require("jlog.js");
 log.level = config.LOG_LEVEL;
 
-log.message(log.INFO, "jet starting up...");
+http.createServer(function(req, res){
 
-// todo: determine HTTP method
+	// todo: set response headers necissary for CORS support
+	res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+	res.setHeader("Access-Control-Allow-Headers","*");
+	res.setHeader("Access-Control-Allow-Origin","*");
 
-// todo: handle OPTIONS request
+	// todo: determine HTTP method
 
-// todo: reject all other HTTP method requests
+	// todo: handle OPTIONS request
 
-// todo: handle GET request
+	// todo: reject all other HTTP method requests
 
-// todo: generate hash of relevant request parameters (URL, headers, etc.)
+	// todo: handle GET request
 
-// todo: check cache for request hash
+	// todo: generate hash of relevant request parameters (URL, headers, etc.)
 
-// todo: create new cache entry
+	// todo: check cache for request hash
 
-// todo: relay request to origin server
-//	do not forwart RANGE request parameters
+	// todo: create new cache entry
 
-// todo: initialize cache entry metadata using origin server response headers
+	// todo: relay request to origin server
+	//	do not forwart RANGE request parameters
 
-// todo: update cache entry metadata:
-//  measure inbound datarate from origin server
-//  and throttle client response to maintain
-//  buffer underrun
+	// todo: initialize cache entry metadata using origin server response headers
 
-// todo: write bytes from origin server to client request
+	// todo: update cache entry metadata:
+	//  measure inbound datarate from origin server
+	//  and throttle client response to maintain
+	//  buffer underrun
 
-// todo: write bytes from origin server to cache
+	// todo: write bytes from origin server to client request
 
-// todo: close origin server connection
+	// todo: write bytes from origin server to cache
 
-// todo: close client request connection
+	// todo: close origin server connection
+
+	// todo: close client request connection
+
+}).listen(config.SERVER_PORT);
+
+log.message(log.INFO, "Starting jet on port " + config.SERVER_PORT + ".");
