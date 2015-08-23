@@ -1,0 +1,3 @@
+curl -v -o track05_test5.mp3 "http://localhost:5000/tc?src=http%3A%2F%2Flocalhost%3A7302%2Fjjg%2Ftrack05.cdda.wav%3Faccess_key%3Djakethedog&fmt=mp3&auth=foo"
+
+
