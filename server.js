@@ -25,7 +25,6 @@ http.createServer(function(req, res){
 			break;
 		case "GET":
 			// handle GET request
-
 			// generate hash of relevant request parameters (URL, headers, etc.)
 			var shasum = crypto.createHash("sha1");
 			shasum.update(req.url 
@@ -42,26 +41,51 @@ http.createServer(function(req, res){
 
 			// check cache for request hash
 			if(cache[req_hash]){
-				log.message(log.INFO, "Request found in cache");
-				// todo: handle RANGE requests
-				// return response headers from cache metadata
-				res.setHeader("Content-Length", cache[req_hash].content_length);
-				res.setHeader("Content-Type", cache[req_hash].content_type);
-				// return data from cache
-				res.write(cache[req_hash].data);
-				res.end();
-				log.message(log.INFO, req.method + " request complete");
+				log.message(log.INFO, "Cache HIT");
+
+				// todo: handle RANGE correctly
+				if(req.headers.range){
+					log.message(log.INFO, "RANGE request: " + req.headers.range);
+					var range_string = req.headers.range;
+					var range_parts = range_string.substring(range_string.indexOf("=")+1).split("-");
+					var range_begin = range_parts[0];
+					var range_end = cache[req_hash].content_length - 1;
+					if(range_parts[1] && range_parts[1].length > 0){
+						range_end = range_parts[1];
+					}
+					log.message(log.DEBUG, "Range begin: " + range_begin);
+					log.message(log.DEBUG, "Range end: " + range_end);
+					// set the headers and status
+					res.setHeader("Content-Range", "bytes " + range_begin + "-" + range_end + "/" +  cache[req_hash].content_length);
+					res.setHeader("Content-Length", cache[req_hash].content_length);
+					res.setHeader("Accept-Ranges", "bytes");
+					res.statusCode = 206;
+					//  return only the requested bytes from the cache
+					res.write(cache[req_hash].data.slice(range_begin, range_end));
+					res.end();
+					log.message(log.INFO, req.method + " request complete");
+				} else {
+					// return response headers from cache metadata
+					res.setHeader("Content-Length", cache[req_hash].content_length);
+					res.setHeader("Content-Type", cache[req_hash].content_type);
+					// return data from cache
+					res.write(cache[req_hash].data);
+					res.end();
+					log.message(log.INFO, req.method + " request complete");
+				}
 			} else {
+				log.message(log.INFO, "Cache MISS");
 				// create new cache entry
 				cache[req_hash] = {};
 
 				// relay request to origin server
 				// todo: do not forward RANGE request headers 
+
 				var origin_req_options = {
 					hostname: config.ORIGIN_SERVER_HOST,	// set via config, alternatively req.hostname,
 					port: config.ORIGIN_SERVER_PORT,		// set via config, alternatively req.port,
 					path: req.url,
-					headers: req.headers,
+					//headers: req.headers,
 					method: "GET"
 				};
 				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
@@ -72,13 +96,18 @@ http.createServer(function(req, res){
 					cache[req_hash].content_length = origin_res.headers["content-length"];
 					cache[req_hash].content_type = origin_res.headers["content-type"];
 					cache[req_hash].data = new Buffer("");
+
+					// write headers from origin to client
+					res.setHeader("Content-Length", cache[req_hash].content_length);
+					res.setHeader("Content-Type", cache[req_hash].content_type);
+
 					// todo: update cache entry metadata:
 					//  measure inbound datarate from origin server
 					//  and throttle client response to maintain
 					//  buffer underrun
 	
 					origin_res.on("data", function(chunk){
-						log.message(log.DEBUG, "Received " + chunk.length + " bytes from origin server");	
+						//log.message(log.DEBUG, "Received " + chunk.length + " bytes from origin server");	
 						// write bytes from origin server to client request
 						res.write(chunk);
 						// append bytes from origin server to cache
