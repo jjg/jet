@@ -41,38 +41,67 @@ http.createServer(function(req, res){
 			var req_hash = shasum.digest("hex");
 			log.message(log.DEBUG, "Request hash: " + req_hash);
 
-			// todo: check cache for request hash
+			// check cache for request hash
 			if(cache[req_hash]){
 				log.message(log.INFO, "Request found in cache");
-				// todo: return response headers from cache metadata
-				// todo: return data from cache
-				res.end(cache[req_hash].data);
-				log.message(log.INFO, req.method + " request complete");
-			} else {
-				// todo: create new cache entry
-				cache[req_hash] = {};
-
-				// todo: relay request to origin server
-				//	do not forwart RANGE request parameters
-
-				// todo: initialize cache entry metadata using origin server response headers
-
-				// todo: update cache entry metadata:
-				//  measure inbound datarate from origin server
-				//  and throttle client response to maintain
-				//  buffer underrun
-	
-				// todo: write bytes from origin server to client request
-				res.write("foo");
-	
-				// todo: write bytes from origin server to cache
-				cache[req_hash].data = "foo";
-	
-				// todo: close origin server connection
-	
-				// todo: close client request connection
+				// return response headers from cache metadata
+				res.setHeader("Content-Length", cache[req_hash].content_length);
+				res.setHeader("Content-Type", cache[req_hash].content_type);
+				// return data from cache
+				res.write(cache[req_hash].data);
 				res.end();
 				log.message(log.INFO, req.method + " request complete");
+			} else {
+				// create new cache entry
+				cache[req_hash] = {};
+
+				// relay request to origin server
+				// todo: do not forward RANGE request headers 
+				var origin_req_options = {
+					hostname: config.ORIGIN_SERVER_HOST,	// set via config, alternatively req.hostname,
+					port: 443,								// hard-coded for HTTPS, alternatively req.port,
+					path: req.url,
+					headers: req.headers,
+					method: "GET"
+				};
+				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
+				var origin_req = https.request(origin_req_options, function(origin_res){
+					log.message(log.DEBUG, "Origin server request status: " + origin_res.statusCode);
+					// todo: if origin status isn't good, end request
+					// initialize cache entry metadata using origin server response headers
+					cache[req_hash].content_length = origin_res.headers["content-length"];
+					cache[req_hash].content_type = origin_res.headers["content-type"];
+					cache[req_hash].data = new Buffer("");
+					// todo: update cache entry metadata:
+					//  measure inbound datarate from origin server
+					//  and throttle client response to maintain
+					//  buffer underrun
+	
+					origin_res.on("data", function(chunk){
+						log.message(log.DEBUG, "Received " + chunk.length + " bytes from origin server");	
+						// write bytes from origin server to client request
+						res.write(chunk);
+						// append bytes from origin server to cache
+						cache[req_hash].data = new Buffer.concat([cache[req_hash].data, chunk]);
+						// todo: use a message to trigger res.write() vs tightly bound like above? 
+					});
+
+					origin_res.on("end", function(){
+						log.message(log.INFO, "Origin server response ended");
+						// todo: close origin server connection?
+						// todo: close client request connection
+						res.end();
+						log.message(log.INFO, req.method + " request complete");
+					});
+
+					origin_res.on("error", function(error){
+						log.message(log.ERROR, "Origin server response error: " + error);
+						res.statusCode = 500;
+						res.end();
+						log.message(log.INFO, req.method + " request comlete");
+					});
+				});
+				origin_req.end();
 			}
 			break;
 		default:
