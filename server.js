@@ -47,8 +47,7 @@ http.createServer(function(req, res){
 					var range_string = req.headers.range;
 					var range_parts = range_string.substring(range_string.indexOf("=")+1).split("-");
 					var range_begin = range_parts[0];
-					// todo: troubleshoot why open-ended RANGE results in content-length mismatch error...
-					var range_end = parseInt(cache[req_hash].content_length); //9050675; //cache[req_hash].content_length - 1;
+					var range_end = cache[req_hash].data.length - 1; //cache[req_hash].content_length - 1;
 					if(range_parts[1] && range_parts[1].length > 0){
 						range_end = range_parts[1];
 					}
@@ -56,17 +55,19 @@ http.createServer(function(req, res){
 					log.message(log.DEBUG, "Range end: " + range_end);
 					// set the headers and status
 					log.message(log.DEBUG, "content_length: " + cache[req_hash].content_length);
-					res.setHeader("Content-Range", "bytes " + range_begin + "-" + range_end + "/" +  cache[req_hash].content_length);
-					res.setHeader("Content-Length", cache[req_hash].content_length);
+					res.setHeader("Content-Range", "bytes " + range_begin + "-" + range_end + "/" +  cache[req_hash].data.length);
+					res.setHeader("Content-Length", cache[req_hash].data.length);
 					res.setHeader("Accept-Ranges", "bytes");
 					res.statusCode = 206;
 					//  return only the requested bytes from the cache
-					res.write(cache[req_hash].data.slice(range_begin, range_end));
+					// todo: troubleshoot why slicing the buffer causes an underrun...
+					//res.write(cache[req_hash].data.slice(range_begin, range_end));
+					res.write(cache[req_hash].data);
 					res.end();
 					log.message(log.INFO, req.method + " request complete");
 				} else {
 					// return response headers from cache metadata
-					res.setHeader("Content-Length", cache[req_hash].content_length);
+					res.setHeader("Content-Length", cache[req_hash].data.length);
 					res.setHeader("Content-Type", cache[req_hash].content_type);
 					// return data from cache
 					res.write(cache[req_hash].data);
