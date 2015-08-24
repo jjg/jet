@@ -7,6 +7,7 @@ log.level = config.LOG_LEVEL;
 
 // array to hold in-memory cache
 var cache = {};
+cache.size = 0;
 
 http.createServer(function(req, res){
 
@@ -38,7 +39,8 @@ http.createServer(function(req, res){
 			var req_hash = shasum.digest("hex");
 			log.message(log.DEBUG, "Request hash: " + req_hash);
 			// check cache for request hash
-			if(cache[req_hash]){
+			var max_age = new Date().getTime() - (config.CACHE_EXPIRATION * 60 * 1000);
+			if(cache[req_hash] && cache[req_hash].created > max_age){
 				log.message(log.INFO, "Cache HIT");
 				// handle RANGE correctly
 				if(req.headers.range){
@@ -90,6 +92,7 @@ http.createServer(function(req, res){
 					// initialize cache entry metadata using origin server response headers
 					cache[req_hash].content_length = origin_res.headers["content-length"];
 					cache[req_hash].content_type = origin_res.headers["content-type"];
+					cache[req_hash].created = new Date().getTime();
 					cache[req_hash].data = new Buffer("");
 
 					// write headers from origin to client
@@ -105,6 +108,8 @@ http.createServer(function(req, res){
 					});
 					origin_res.on("end", function(){
 						log.message(log.INFO, "Origin server response ended");
+						cache.size += cache[req_hash].data.length;
+						log.message(log.INFO, "Cache utilization: " + Math.round(((cache.size/1024)/1024)) + "MB");
 						// todo: close origin server connection?
 						// todo: close client request connection
 						res.end();
