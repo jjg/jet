@@ -80,15 +80,24 @@ http.createServer(function(req, res){
 				if(cache[req_hash]){
 					cache.size -= cache[req_hash].data.length;
 				}
-
 				// create new cache entry
 				cache[req_hash] = {};
+				// extract all but range headers from original request
+				var origin_req_headers = {};
+				for(header in req.headers){
+					if(header.toLowerCase() != "range"){
+						if(req.headers.hasOwnProperty(header)){
+							var selected_header = req.headers[header];
+							origin_req_headers[header] = selected_header;
+						}
+					}
+				}
 				// relay request to origin server
 				var origin_req_options = {
 					hostname: config.ORIGIN_SERVER_HOST,	// set via config, alternatively req.hostname,
 					port: config.ORIGIN_SERVER_PORT,		// set via config, alternatively req.port,
 					path: req.url,
-					//headers: req.headers,					// todo: include headers, just not RANGE
+					headers: origin_req_headers,
 					method: "GET"
 				};
 				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
