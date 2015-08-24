@@ -3,5 +3,5 @@ module.exports = {
 	SERVER_PORT: 5000,
 	ORIGIN_SERVER_HOST: "localhost",
 	ORIGIN_SERVER_PORT: 6000,
-	CACHE_EXPIRATION: 1
+	CACHE_EXPIRATION: 1	// minutes
 };
