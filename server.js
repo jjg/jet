@@ -1,7 +1,6 @@
 var http = require("http");
 var crypto = require("crypto");
 var url = require("url");
-var RQ = require("rq.js");
 var config = require("./config.js");
 var log = require("jlog.js");
 log.level = config.LOG_LEVEL;
@@ -61,8 +60,8 @@ http.createServer(function(req, res){
 					res.statusCode = 206;
 					//  return only the requested bytes from the cache
 					// todo: troubleshoot why slicing the buffer causes an underrun...
-					//res.write(cache[req_hash].data.slice(range_begin, range_end));
-					res.write(cache[req_hash].data);
+					res.write(cache[req_hash].data.slice(range_begin, (range_end-range_begin)+1));
+					//res.write(cache[req_hash].data);
 					res.end();
 					log.message(log.INFO, req.method + " request complete");
 				} else {
