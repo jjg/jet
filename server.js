@@ -104,6 +104,14 @@ http.createServer(function(req, res){
 				var origin_req = http.request(origin_req_options, function(origin_res){
 					log.message(log.DEBUG, "Origin server request status: " + origin_res.statusCode);
 					// todo: if origin status isn't good, end request
+					if(origin_res.statusCode < 200 || origin_res.statusCode > 299){
+						res.statusCode = 500;
+						res.end();
+						log.message(log.ERROR, "Origin server returned error status:  " + origin_res.statusCode);
+						log.message(log.INFO, req.method + " request complete");
+						return;
+					}
+
 					// initialize cache entry metadata using origin server response headers
 					cache[req_hash].content_length = origin_res.headers["content-length"];
 					cache[req_hash].content_type = origin_res.headers["content-type"];
