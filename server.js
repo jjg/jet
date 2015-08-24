@@ -69,6 +69,7 @@ http.createServer(function(req, res){
 					// return all data from cache
 					res.write(cache[req_hash].data);
 					res.end();
+					cache[req_hash].last_used = new Date().getTime();
 					log.message(log.INFO, req.method + " request complete");
 				}
 			} else {
@@ -113,6 +114,7 @@ http.createServer(function(req, res){
 					cache[req_hash].content_length = origin_res.headers["content-length"];
 					cache[req_hash].content_type = origin_res.headers["content-type"];
 					cache[req_hash].created = new Date().getTime();
+					cache[req_hash].last_used = new Date().getTime();
 					cache[req_hash].data = new Buffer("");
 
 					// write headers from origin to client
@@ -135,7 +137,19 @@ http.createServer(function(req, res){
 						if(cache_available_percent < 10){
 							log.message(log.WARN, "Cache is full, evicting LRU object");
 							// todo: evict LRU object
-							// todo: recalculate cache utilization
+							var eviction_candidate = cache[req_hash];
+							for(obj in cache){
+								if(cache.hasOwnProperty(obj)){
+									if(cache[obj].last_used < eviction_candidate.last_used){
+										eviction_candidate = cache[obj];
+									}
+								}
+							}
+							// subtract object about to be deleted from stats
+							cache.size -= eviction_candidate.data.length;
+							delete eviction_candidate;
+							// recalculate cache utilization
+							cache_available_percent = Math.round(100-((((cache.size/1024)/1024) / config.MAXIMUM_CACHE_SIZE) * 100));
 						}
 						log.message(log.INFO, "Cache utilization: " + Math.round((cache.size/1024)/1024) + "MB ("+ cache_available_percent  +"%) free");
 						res.end();
