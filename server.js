@@ -103,7 +103,7 @@ http.createServer(function(req, res){
 				log.message(log.DEBUG, "Origin request options: " + JSON.stringify(origin_req_options));
 				var origin_req = http.request(origin_req_options, function(origin_res){
 					log.message(log.DEBUG, "Origin server request status: " + origin_res.statusCode);
-					// todo: if origin status isn't good, end request
+					// if origin status isn't good, end request
 					if(origin_res.statusCode < 200 || origin_res.statusCode > 299){
 						res.statusCode = 500;
 						res.end();
@@ -133,8 +133,6 @@ http.createServer(function(req, res){
 						log.message(log.INFO, "Origin server response ended");
 						cache.size += cache[req_hash].data.length;
 						log.message(log.INFO, "Cache utilization: " + Math.round(((cache.size/1024)/1024)) + "MB");
-						// todo: close origin server connection?
-						// todo: close client request connection
 						res.end();
 						log.message(log.INFO, req.method + " request complete");
 					});
