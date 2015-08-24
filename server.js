@@ -10,12 +10,10 @@ var cache = {};
 cache.size = 0;
 
 http.createServer(function(req, res){
-
 	// set response headers necissary for CORS support
 	res.setHeader("Access-Control-Allow-Methods","GET,OPTIONS");
 	res.setHeader("Access-Control-Allow-Headers","*");
 	res.setHeader("Access-Control-Allow-Origin","*");
-
 	// determine HTTP method
 	log.message(log.INFO, "Processing " + req.method + " request");
 	switch(req.method){
@@ -75,7 +73,6 @@ http.createServer(function(req, res){
 				}
 			} else {
 				log.message(log.INFO, "Cache MISS");
-
 				// if we missed due to expiration, etc., subtract old object from cache utilization
 				if(cache[req_hash]){
 					cache.size -= cache[req_hash].data.length;
@@ -132,7 +129,15 @@ http.createServer(function(req, res){
 					origin_res.on("end", function(){
 						log.message(log.INFO, "Origin server response ended");
 						cache.size += cache[req_hash].data.length;
-						log.message(log.INFO, "Cache utilization: " + Math.round(((cache.size/1024)/1024)) + "MB");
+
+						// todo: calculate avaliable cache capacity and evict objects if necissary
+						var cache_available_percent = Math.round(100-((((cache.size/1024)/1024) / config.MAXIMUM_CACHE_SIZE) * 100));
+						if(cache_available_percent < 10){
+							log.message(log.WARN, "Cache is full, evicting LRU object");
+							// todo: evict LRU object
+							// todo: recalculate cache utilization
+						}
+						log.message(log.INFO, "Cache utilization: " + Math.round((cache.size/1024)/1024) + "MB ("+ cache_available_percent  +"%) free");
 						res.end();
 						log.message(log.INFO, req.method + " request complete");
 					});
