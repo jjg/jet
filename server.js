@@ -131,12 +131,11 @@ http.createServer(function(req, res){
 					origin_res.on("end", function(){
 						log.message(log.INFO, "Origin server response ended");
 						cache.size += cache[req_hash].data.length;
-
-						// todo: calculate avaliable cache capacity and evict objects if necissary
+						// calculate avaliable cache capacity and evict objects if necissary
 						var cache_available_percent = Math.round(100-((((cache.size/1024)/1024) / config.MAXIMUM_CACHE_SIZE) * 100));
 						if(cache_available_percent < 10){
 							log.message(log.WARN, "Cache is full, evicting LRU object");
-							// todo: evict LRU object
+							// evict LRU object (todo: this may not be the fastest way to do this, investigate)
 							var eviction_candidate = cache[req_hash];
 							for(obj in cache){
 								if(cache.hasOwnProperty(obj)){
