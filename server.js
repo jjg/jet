@@ -75,6 +75,12 @@ http.createServer(function(req, res){
 				}
 			} else {
 				log.message(log.INFO, "Cache MISS");
+
+				// if we missed due to expiration, etc., subtract old object from cache utilization
+				if(cache[req_hash]){
+					cache.size -= cache[req_hash].data.length;
+				}
+
 				// create new cache entry
 				cache[req_hash] = {};
 				// relay request to origin server
