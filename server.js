@@ -59,9 +59,7 @@ http.createServer(function(req, res){
 					res.setHeader("Accept-Ranges", "bytes");
 					res.statusCode = 206;
 					//  return only the requested bytes from the cache
-					// todo: troubleshoot why slicing the buffer causes an underrun...
 					res.write(cache[req_hash].data.slice(range_begin, (range_end-range_begin)+1));
-					//res.write(cache[req_hash].data);
 					res.end();
 					log.message(log.INFO, req.method + " request complete");
 				} else {
