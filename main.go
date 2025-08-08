@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 func main() {
 
 	// TODO: Look for settings (~/.config/jet/settings.json)
+	journalDir := "/home/jason/journal"
 
 	// Draw ruler
 	fmt.Println("  |--------|---------|---------|---------|---------|---------|---------|---------|")
@@ -29,15 +31,16 @@ func main() {
 		}
 	}
 
-	// DEBUG: Dump entry to console
-	fmt.Println(entry)
+	// Compute filename
+	t := time.Now()
+	filename := fmt.Sprintf("%s/%s.txt", journalDir, t.Format("2006-01-02"))
 
-	// TODO: Seems like `entry` might be missing the linefeeds...
-
-	// TODO: Check for existing journal file for today
+	// TODO: Check if journal directory exists and create if not
+	// TODO: Check if file exists
+	// TODO: If the file exists, append; otherwise create a new file
 
 	// TODO: Create or update today's journal file
-	f, err := os.Create("journal/today.txt")
+	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)
 	}
