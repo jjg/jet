@@ -36,11 +36,9 @@ func main() {
 	filename := fmt.Sprintf("%s/%s.txt", journalDir, t.Format("2006-01-02"))
 
 	// TODO: Check if journal directory exists and create if not
-	// TODO: Check if file exists
-	// TODO: If the file exists, append; otherwise create a new file
 
-	// TODO: Create or update today's journal file
-	f, err := os.Create(filename)
+	// Create or update today's journal file
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
 	}
