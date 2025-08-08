@@ -13,11 +13,26 @@ func main() {
 
 	// TODO: Provide better erors (don't just panic() all the time)
 
-	// TODO: Look for settings (~/.config/jet/settings.json)
+	// TODO: Get journal dir from from settings (~/.config/jet/settings.json)
 	journalDir := "/home/jason/journal"
 
-	// TODO: Add entry/date above the ruler?
+	// Check if journal directory exists and create if not
+	_, err := os.Stat(journalDir)
+	if errors.Is(err, fs.ErrNotExist) {
+		// Try to create the journal dir
+		err := os.MkdirAll(journalDir, 0750)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// Get date string for today's entry
+	t := time.Now()
+	dateString := t.Format("2006-01-02")
+
 	// Draw ruler
+	// TODO: Maybe move to function and refactor to be more dynamic.
+	fmt.Printf("                                                                       %s\n", dateString)
 	fmt.Println("  |--------|---------|---------|---------|---------|---------|---------|---------|")
 
 	// Read input
@@ -36,21 +51,8 @@ func main() {
 		}
 	}
 
-	// Check if journal directory exists and create if not
-	_, err := os.Stat(journalDir)
-	if errors.Is(err, fs.ErrNotExist) {
-		// Try to create the journal dir
-		err := os.MkdirAll(journalDir, 0750)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	// Compute filename
-	t := time.Now()
-	filename := fmt.Sprintf("%s/%s.txt", journalDir, t.Format("2006-01-02"))
-
 	// Create or update today's journal file
+	filename := fmt.Sprintf("%s/%s.txt", journalDir, dateString)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -70,6 +72,4 @@ func main() {
 	}
 
 	w.Flush()
-
-	// TODO: Provide some feedback after the write?
 }
