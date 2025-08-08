@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"time"
 )
@@ -34,11 +36,19 @@ func main() {
 		}
 	}
 
+	// Check if journal directory exists and create if not
+	_, err := os.Stat(journalDir)
+	if errors.Is(err, fs.ErrNotExist) {
+		// Try to create the journal dir
+		err := os.MkdirAll(journalDir, 0750)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	// Compute filename
 	t := time.Now()
 	filename := fmt.Sprintf("%s/%s.txt", journalDir, t.Format("2006-01-02"))
-
-	// TODO: Check if journal directory exists and create if not
 
 	// Create or update today's journal file
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
