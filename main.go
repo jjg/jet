@@ -9,9 +9,12 @@ import (
 
 func main() {
 
+	// TODO: Provide better erors (don't just panic() all the time)
+
 	// TODO: Look for settings (~/.config/jet/settings.json)
 	journalDir := "/home/jason/journal"
 
+	// TODO: Add entry/date above the ruler?
 	// Draw ruler
 	fmt.Println("  |--------|---------|---------|---------|---------|---------|---------|---------|")
 
@@ -57,4 +60,6 @@ func main() {
 	}
 
 	w.Flush()
+
+	// TODO: Provide some feedback after the write?
 }
