@@ -4,16 +4,51 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"golang.org/x/term"
 	"io/fs"
 	"os"
 	"time"
 )
 
+func drawHeader(t string) {
+
+	// Only draw if we're in a terminal
+	if term.IsTerminal(0) {
+
+		// Get the terminal dimensions (ignore height since we don't use it).
+		termWidth, _, err := term.GetSize(0)
+		if err != nil {
+			panic(err)
+		}
+
+		// Draw header text right-justified.
+		headerWidth := termWidth - len(t) - 1
+		for i := 0; i < headerWidth; i++ {
+			fmt.Printf(" ")
+		}
+		fmt.Printf("%s\n", t)
+
+		// Draw ruler.
+		rulerWidth := termWidth - 4
+		fmt.Print("  |")
+		for i := 1; i < rulerWidth; i++ {
+			if i%10 == 0 {
+				fmt.Printf("%d", i)
+				i = i + len(fmt.Sprintf("%d", i)) - 1
+			} else {
+				fmt.Print("-")
+			}
+		}
+		fmt.Print("|\n")
+	}
+}
+
 func main() {
 
 	// TODO: Provide better erors (don't just panic() all the time).
-	// TODO: Allow journal dir to be cusomized.
+	// TODO: Allow journal dir to be cusomized?
 	// TODO: Provide some help/instructions.
+	// TODO: Allow text to be piped-in?
 
 	// Make sure we have a working journal dir before they write anything.
 	home, err := os.UserHomeDir()
@@ -37,9 +72,8 @@ func main() {
 	t := time.Now()
 	dateString := t.Format("2006-01-02")
 
-	// Draw ruler
-	fmt.Printf("                                                                       %s\n", dateString)
-	fmt.Println("  |--------|---------|---------|---------|---------|---------|---------|---------|")
+	// If we're in interactive mode, draw the header..
+	drawHeader(dateString)
 
 	// Read input
 	entry := make([]string, 0)
