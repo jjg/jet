@@ -29,5 +29,10 @@ GOOS=linux GOARCH=amd64 go build -o bin/jet-os-arch
 
 `jet` will create a directory called `jet-journal` in your home directory where it will keep a new journal file for each day containing the entries you record as shown above.  Feel free to edit and consume these files however you like, `jet` will simply append to the current day's file if a new entry is recorded for that day.
 
+### Subcommands
+Right now there is only one: `today`.  Running `jet today` will display the contents of the current day's journal entries.
+
+...more to come.
+
 ## TODO
 More could be done, but I don't want to ruin it so I'm leaving it alone for now.
