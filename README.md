@@ -35,4 +35,11 @@ Right now there is only one: `today`.  Running `jet today` will display the cont
 ...more to come.
 
 ## TODO
-More could be done, but I don't want to ruin it so I'm leaving it alone for now.
+Some potential ideas for the future.
+
+- [ ] `yesterday` subcommand
+- [ ] `week` subcommand
+- [ ] Provide better erors (don't just panic() all the time).
+- [ ] Allow journal dir to be cusomized?
+- [ ] Provide some help/instructions.
+- [ ] Allow text to be piped-in?

@@ -127,12 +127,6 @@ func storeEntry(journalDir string, entryName string, entry []string) {
 
 func main() {
 	t := time.Now()
-
-	// TODO: Provide better erors (don't just panic() all the time).
-	// TODO: Allow journal dir to be cusomized?
-	// TODO: Provide some help/instructions.
-	// TODO: Allow text to be piped-in?
-
 	journalDir := getJournalDir()
 
 	// Look for subcommands on the command line
