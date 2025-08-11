@@ -11,17 +11,6 @@ Download the `jet` binary for your architecture/os and put it somewhere in your 
 
 Alternatively (if you have Go installed), install it with `go install`.
 
-### Other platforms
-Get a list of operating systems and architectures available.
-```
-go tool dist list
-```
-
-...then build for each platform (substitute `os` and `arch` in the filename appropriately):
-```
-GOOS=linux GOARCH=amd64 go build -o bin/jet-os-arch
-```
-
 ## Usage
 1. Open a terminal and type `jet`
 2. Type your journal entry
@@ -45,4 +34,4 @@ Some potential ideas for the future.
 - [ ] Provide better errors (don't just panic() all the time).
 - [ ] Allow journal dir to be customized?
 - [ ] Allow text to be piped-in?
-- [ ] Add a build script so binaries can be built in one step
+- [X] Add a build script so binaries can be built in one step
