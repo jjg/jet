@@ -114,6 +114,10 @@ func storeEntry(journalDir string, entryName string, entry []string) {
 
 	// Write it to disk.
 	w := bufio.NewWriter(f)
+	if _, err := w.WriteString("\n"); err != nil {
+		panic(err)
+	}
+
 	for _, line := range entry {
 		if _, err := w.WriteString(line); err != nil {
 			panic(err)
