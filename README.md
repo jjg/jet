@@ -39,7 +39,10 @@ Some potential ideas for the future.
 
 - [ ] `yesterday` subcommand
 - [ ] `week` subcommand
-- [ ] Provide better erors (don't just panic() all the time).
-- [ ] Allow journal dir to be cusomized?
-- [ ] Provide some help/instructions.
+- [ ] `help` subcommand
+- [ ] `find` subcommand
+- [ ] Add timestamps & linefeeds between entries
+- [ ] Provide better errors (don't just panic() all the time).
+- [ ] Allow journal dir to be customized?
 - [ ] Allow text to be piped-in?
+- [ ] Add a build script so binaries can be built in one step
