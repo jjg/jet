@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/term"
+	"io"
 	"io/fs"
 	"os"
 	"time"
@@ -104,6 +105,7 @@ func storeEntry(journalDir string, entryName string, entry []string) {
 }
 
 func main() {
+	t := time.Now()
 
 	// TODO: Provide better erors (don't just panic() all the time).
 	// TODO: Allow journal dir to be cusomized?
@@ -112,17 +114,49 @@ func main() {
 
 	journalDir := getJournalDir()
 
-	t := time.Now()
-
-	// TODO: Look for subcommands on the command line
-
-	// If all else fails, create a new entry.
-	entryName := t.Format("2006-01-02")
-
-	// If we're in interactive mode, draw the header.
-	if term.IsTerminal(0) {
-		drawHeader(entryName)
+	// Look for subcommands on the command line
+	subCommand := "newInteractiveEntry"
+	args := os.Args
+	if len(args) > 1 {
+		subCommand = args[1]
 	}
-	entry := getInput()
-	storeEntry(journalDir, entryName, entry)
+
+	// DEBUG
+	//fmt.Println(subCommand)
+
+	switch subCommand {
+	case "today":
+
+		// Show today's entries
+		entryName := t.Format("2006-01-02")
+		filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
+		f, err := os.Open(filename)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+		r := bufio.NewReader(f)
+		buf := make([]byte, 1024)
+		for {
+			n, err := r.Read(buf)
+			if err != nil && err != io.EOF {
+				panic(err)
+			}
+			if n == 0 {
+				break
+			}
+			fmt.Printf("%s", buf[:n])
+		}
+	default:
+
+		// If all else fails, create a new entry.
+		entryName := t.Format("2006-01-02")
+
+		// If we're in interactive mode, draw the header.
+		if term.IsTerminal(0) {
+			drawHeader(entryName)
+		}
+		entry := getInput()
+		storeEntry(journalDir, entryName, entry)
+	}
 }
