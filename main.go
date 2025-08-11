@@ -11,20 +11,13 @@ import (
 	"time"
 )
 
-func drawHeader(t string) {
+func drawHeader() {
 
 	// Get the terminal dimensions (ignore height since we don't use it).
 	termWidth, _, err := term.GetSize(0)
 	if err != nil {
 		panic(err)
 	}
-
-	// Draw header text right-justified.
-	headerWidth := termWidth - len(t) - 1
-	for i := 0; i < headerWidth; i++ {
-		fmt.Printf(" ")
-	}
-	fmt.Printf("%s\n", t)
 
 	// Draw ruler.
 	rulerWidth := termWidth - 4
@@ -41,6 +34,7 @@ func drawHeader(t string) {
 }
 
 func getJournalDir() string {
+
 	// Make sure we have a working journal dir before they write anything.
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -62,19 +56,33 @@ func getJournalDir() string {
 	return journalDir
 }
 
-func getInput() []string {
+func getInput(interactive bool) []string {
+
+	if interactive {
+		drawHeader()
+	}
+
 	entry := make([]string, 0)
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("> ")
-		scanner.Scan()
-		text := scanner.Text()
 
-		// Read until EOF (blank line)
-		if len(text) != 0 {
-			entry = append(entry, text)
+		if interactive {
+			fmt.Print("> ")
+		}
+
+		more := scanner.Scan()
+		text := scanner.Text()
+		entry = append(entry, text)
+
+		// Break on double linefeed if in interactive mode.
+		if interactive {
+			if len(text) == 0 {
+				break
+			}
 		} else {
-			break
+			if !more {
+				break
+			}
 		}
 	}
 
@@ -133,7 +141,7 @@ func main() {
 	t := time.Now()
 	journalDir := getJournalDir()
 
-	// Look for subcommands on the command line
+	// Look for subcommands on the command line.
 	subCommand := "newInteractiveEntry"
 	args := os.Args
 	if len(args) > 1 {
@@ -143,7 +151,7 @@ func main() {
 	switch subCommand {
 	case "today":
 
-		// Show today's entries
+		// Show today's entries.
 		entryName := t.Format("2006-01-02")
 		showEntry(journalDir, entryName)
 
@@ -151,12 +159,7 @@ func main() {
 
 		// If no subcommand is provided, create a new entry.
 		entryName := t.Format("2006-01-02")
-
-		// If we're in interactive mode, draw the header.
-		if term.IsTerminal(0) {
-			drawHeader(entryName)
-		}
-		entry := getInput()
+		entry := getInput(term.IsTerminal(0))
 		storeEntry(journalDir, entryName, entry)
 	}
 }
