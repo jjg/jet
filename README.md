@@ -19,16 +19,19 @@ Alternatively (if you have Go installed), install it with `go install`.
 `jet` will create a directory called `jet-journal` in your home directory where it will keep a new journal file for each day containing the entries you record as shown above.  Feel free to edit and consume these files however you like, `jet` will simply append to the current day's file if a new entry is recorded for that day.
 
 ### Subcommands
-Right now there is only one: `today`.  Running `jet today` will display the contents of the current day's journal entries.
 
-...more to come.
+* `jet help`: displays some info and instructions
+* `jet today`: displays the contents of the current day's journal entries
+* `jet yesterday`: displays the contents of yesterday's entries
 
 ## TODO
 Some potential ideas for the future.
 
-- [ ] `yesterday` subcommand
+- [X] `today` subcommand
+- [X] `yesterday` subcommand
+- [ ] `tomorrow` subcommand
 - [ ] `week` subcommand
-- [ ] `help` subcommand
+- [X] `help` subcommand
 - [ ] `find` subcommand
 - [X] Add linefeeds between entries
 - [ ] Provide better errors (don't just `panic()` all the time)
