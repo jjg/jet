@@ -81,6 +81,27 @@ func getInput() []string {
 	return entry
 }
 
+func showEntry(journalDir string, entryName string) {
+	filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
+	f, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	r := bufio.NewReader(f)
+	buf := make([]byte, 1024)
+	for {
+		n, err := r.Read(buf)
+		if err != nil && err != io.EOF {
+			panic(err)
+		}
+		if n == 0 {
+			break
+		}
+		fmt.Printf("%s", buf[:n])
+	}
+}
+
 func storeEntry(journalDir string, entryName string, entry []string) {
 
 	// Create or update today's journal file
@@ -129,27 +150,11 @@ func main() {
 
 		// Show today's entries
 		entryName := t.Format("2006-01-02")
-		filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
-		f, err := os.Open(filename)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-		r := bufio.NewReader(f)
-		buf := make([]byte, 1024)
-		for {
-			n, err := r.Read(buf)
-			if err != nil && err != io.EOF {
-				panic(err)
-			}
-			if n == 0 {
-				break
-			}
-			fmt.Printf("%s", buf[:n])
-		}
+		showEntry(journalDir, entryName)
+
 	default:
 
-		// If all else fails, create a new entry.
+		// If no subcommand is provided, create a new entry.
 		entryName := t.Format("2006-01-02")
 
 		// If we're in interactive mode, draw the header.
