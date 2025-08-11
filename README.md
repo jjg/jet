@@ -3,6 +3,8 @@ Journal EnTry
 
 A reliable focused writing tool.
 
+![screenshot of jet running in a terminal](images/screenshot.png)
+
 ## Status
 Good enough.  See the TODO section below.
 
