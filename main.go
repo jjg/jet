@@ -12,44 +12,34 @@ import (
 
 func drawHeader(t string) {
 
-	// Only draw if we're in a terminal
-	if term.IsTerminal(0) {
-
-		// Get the terminal dimensions (ignore height since we don't use it).
-		termWidth, _, err := term.GetSize(0)
-		if err != nil {
-			panic(err)
-		}
-
-		// Draw header text right-justified.
-		headerWidth := termWidth - len(t) - 1
-		for i := 0; i < headerWidth; i++ {
-			fmt.Printf(" ")
-		}
-		fmt.Printf("%s\n", t)
-
-		// Draw ruler.
-		rulerWidth := termWidth - 4
-		fmt.Print("  |")
-		for i := 1; i < rulerWidth; i++ {
-			if i%10 == 0 {
-				fmt.Printf("%d", i)
-				i = i + len(fmt.Sprintf("%d", i)) - 1
-			} else {
-				fmt.Print("-")
-			}
-		}
-		fmt.Print("|\n")
+	// Get the terminal dimensions (ignore height since we don't use it).
+	termWidth, _, err := term.GetSize(0)
+	if err != nil {
+		panic(err)
 	}
+
+	// Draw header text right-justified.
+	headerWidth := termWidth - len(t) - 1
+	for i := 0; i < headerWidth; i++ {
+		fmt.Printf(" ")
+	}
+	fmt.Printf("%s\n", t)
+
+	// Draw ruler.
+	rulerWidth := termWidth - 4
+	fmt.Print("  |")
+	for i := 1; i < rulerWidth; i++ {
+		if i%10 == 0 {
+			fmt.Printf("%d", i)
+			i = i + len(fmt.Sprintf("%d", i)) - 1
+		} else {
+			fmt.Print("-")
+		}
+	}
+	fmt.Print("|\n")
 }
 
-func main() {
-
-	// TODO: Provide better erors (don't just panic() all the time).
-	// TODO: Allow journal dir to be cusomized?
-	// TODO: Provide some help/instructions.
-	// TODO: Allow text to be piped-in?
-
+func getJournalDir() string {
 	// Make sure we have a working journal dir before they write anything.
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -68,14 +58,10 @@ func main() {
 		}
 	}
 
-	// Get the name for today's entry
-	t := time.Now()
-	dateString := t.Format("2006-01-02")
+	return journalDir
+}
 
-	// If we're in interactive mode, draw the header..
-	drawHeader(dateString)
-
-	// Read input
+func getInput() []string {
 	entry := make([]string, 0)
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -91,8 +77,13 @@ func main() {
 		}
 	}
 
+	return entry
+}
+
+func storeEntry(journalDir string, entryName string, entry []string) {
+
 	// Create or update today's journal file
-	filename := fmt.Sprintf("%s/%s.txt", journalDir, dateString)
+	filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -110,4 +101,28 @@ func main() {
 		}
 	}
 	w.Flush()
+}
+
+func main() {
+
+	// TODO: Provide better erors (don't just panic() all the time).
+	// TODO: Allow journal dir to be cusomized?
+	// TODO: Provide some help/instructions.
+	// TODO: Allow text to be piped-in?
+
+	journalDir := getJournalDir()
+
+	t := time.Now()
+
+	// TODO: Look for subcommands on the command line
+
+	// If all else fails, create a new entry.
+	entryName := t.Format("2006-01-02")
+
+	// If we're in interactive mode, draw the header.
+	if term.IsTerminal(0) {
+		drawHeader(entryName)
+	}
+	entry := getInput()
+	storeEntry(journalDir, entryName, entry)
 }
