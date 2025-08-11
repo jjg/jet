@@ -30,11 +30,10 @@ Some potential ideas for the future.
 - [ ] `week` subcommand
 - [ ] `help` subcommand
 - [ ] `find` subcommand
-- [ ] Add timestamps between entries?
 - [X] Add linefeeds between entries
 - [ ] Provide better errors (don't just `panic()` all the time)
 - [ ] Allow journal dir to be customized?
 - [X] Allow text to be piped-in?
 - [X] Add a build script so binaries can be built in one step
 - [ ] Add date to header of each journal file?
-- [ ] Tweak journal file permissions (owner ro)?
+- [X] Tweak journal file permissions (only accessible to owner by default)

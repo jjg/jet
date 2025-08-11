@@ -48,7 +48,7 @@ func getJournalDir() string {
 
 		// Try to create the journal dir.
 		// TODO: Maybe notify (and confirm?) before doing this?
-		if err := os.MkdirAll(journalDir, 0750); err != nil {
+		if err := os.MkdirAll(journalDir, 0700); err != nil {
 			panic(err)
 		}
 	}
@@ -113,8 +113,8 @@ func showEntry(journalDir string, entryName string) {
 func storeEntry(journalDir string, entryName string, entry []string) {
 
 	// Create or update the file for the specified journal entry.
-	filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
-	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	filename := fmt.Sprintf("%s/%s.jet.txt", journalDir, entryName)
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
 		panic(err)
 	}
