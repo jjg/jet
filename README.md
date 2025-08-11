@@ -9,7 +9,7 @@ A reliable focused writing tool.
 Good enough.  See the TODO section below.
 
 ## Installation
-Download the `jet` binary for your architecture/os and put it somewhere in your path.
+Download the `jet` binary from the [bin](bin) directory for your architecture/os and put it somewhere in your path.
 
 Alternatively (if you have Go installed), install it with `go install`.
 
