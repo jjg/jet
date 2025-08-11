@@ -150,6 +150,11 @@ func main() {
 
 	switch subCommand {
 	case "help":
+		fmt.Println("A reliable focused writing tool.")
+		fmt.Println("")
+		fmt.Println("Journal entries for each day will be stored in a directory")
+		fmt.Println("named 'jet-journal' in your home directory.")
+		fmt.Println("")
 		fmt.Println("usage: jet (help, today, yesterday)")
 		fmt.Println("jet\t\t- Create a new journal entry")
 		fmt.Println("jet help\t- this message")
