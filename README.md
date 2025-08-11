@@ -32,7 +32,10 @@ Some potential ideas for the future.
 - [ ] `find` subcommand
 - [ ] Add timestamps between entries?
 - [X] Add linefeeds between entries
-- [ ] Provide better errors (don't just panic() all the time).
+- [ ] Provide better errors (don't just `panic()` all the time)
 - [ ] Allow journal dir to be customized?
 - [ ] Allow text to be piped-in?
 - [X] Add a build script so binaries can be built in one step
+- [ ] Add date to header of each journal file?
+- [ ] Tweak journal file permissions (owner ro)?
+
