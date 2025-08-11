@@ -90,7 +90,7 @@ func getInput(interactive bool) []string {
 }
 
 func showEntry(journalDir string, entryName string) {
-	filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
+	filename := fmt.Sprintf("%s/%s.jet.txt", journalDir, entryName)
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -149,12 +149,19 @@ func main() {
 	}
 
 	switch subCommand {
+	case "help":
+		fmt.Println("usage: jet (help, today, yesterday)")
+		fmt.Println("jet\t\t- Create a new journal entry")
+		fmt.Println("jet help\t- this message")
+		fmt.Println("jet today\t- Show today's journal entries")
+		fmt.Println("jet yesterday\t- Show yesterday's entries")
+		fmt.Println("")
 	case "today":
-
-		// Show today's entries.
 		entryName := t.Format("2006-01-02")
 		showEntry(journalDir, entryName)
-
+	case "yesterday":
+		entryName := t.Add(-time.Hour * 24).Format("2006-01-02")
+		showEntry(journalDir, entryName)
 	default:
 
 		// If no subcommand is provided, create a new entry.
