@@ -19,15 +19,6 @@ func drawHeader() {
 		panic(err)
 	}
 
-	/*
-		// Draw header text right-justified.
-		headerWidth := termWidth - len(t) - 1
-		for i := 0; i < headerWidth; i++ {
-			fmt.Printf(" ")
-		}
-		fmt.Printf("%s\n", t)
-	*/
-
 	// Draw ruler.
 	rulerWidth := termWidth - 4
 	fmt.Print("  |")
@@ -150,7 +141,7 @@ func main() {
 	t := time.Now()
 	journalDir := getJournalDir()
 
-	// Look for subcommands on the command line
+	// Look for subcommands on the command line.
 	subCommand := "newInteractiveEntry"
 	args := os.Args
 	if len(args) > 1 {
@@ -160,7 +151,7 @@ func main() {
 	switch subCommand {
 	case "today":
 
-		// Show today's entries
+		// Show today's entries.
 		entryName := t.Format("2006-01-02")
 		showEntry(journalDir, entryName)
 
@@ -168,11 +159,6 @@ func main() {
 
 		// If no subcommand is provided, create a new entry.
 		entryName := t.Format("2006-01-02")
-
-		// If we're in interactive mode, draw the header.
-		//if term.IsTerminal(0) {
-		//drawHeader(entryName)
-		//}
 		entry := getInput(term.IsTerminal(0))
 		storeEntry(journalDir, entryName, entry)
 	}
