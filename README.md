@@ -30,7 +30,8 @@ Some potential ideas for the future.
 - [ ] `week` subcommand
 - [ ] `help` subcommand
 - [ ] `find` subcommand
-- [ ] Add timestamps & linefeeds between entries?
+- [ ] Add timestamps between entries?
+- [X] Add linefeeds between entries
 - [ ] Provide better errors (don't just panic() all the time).
 - [ ] Allow journal dir to be customized?
 - [ ] Allow text to be piped-in?
