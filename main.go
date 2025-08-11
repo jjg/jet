@@ -104,7 +104,7 @@ func showEntry(journalDir string, entryName string) {
 
 func storeEntry(journalDir string, entryName string, entry []string) {
 
-	// Create or update today's journal file
+	// Create or update the file for the specified journal entry.
 	filename := fmt.Sprintf("%s/%s.txt", journalDir, entryName)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -141,9 +141,6 @@ func main() {
 	if len(args) > 1 {
 		subCommand = args[1]
 	}
-
-	// DEBUG
-	//fmt.Println(subCommand)
 
 	switch subCommand {
 	case "today":
