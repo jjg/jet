@@ -42,3 +42,5 @@ Some potential ideas for the future.
 - [X] Add a build script so binaries can be built in one step
 - [ ] Add date to header of each journal file?
 - [X] Tweak journal file permissions (only accessible to owner by default)
+- [ ] Arbitrary date subcommand?
+- [ ] Jet for lists?
