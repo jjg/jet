@@ -9,9 +9,9 @@ A reliable focused writing tool.
 Jet is close to complete.  This project is evolving into something a bit broader than just Jet, so expect to see more changes soon.
 
 ## Installation
-Download the `jet` binaries from the [bin](bin) directory for your architecture/os and put it somewhere in your path.
+Download binaries from the [bin](bin) directory for your architecture/os and put them somewhere in your path.
 
-Alternatively (if you have Go installed), install it with `go install ./cmd/jet/`, `go install ./cmd/today/`, etc..
+Alternatively (if you have Go installed), install it with `go install ./tools/jet/`, `go install ./tools/today/`, etc..
 
 ## Usage
 1. Open a terminal and type `jet`
@@ -37,10 +37,8 @@ Some potential ideas for the future.
 - [ ] `find` subcommand
 - [X] Add linefeeds between entries
 - [ ] Provide better errors (don't just `panic()` all the time)
-- [ ] Allow journal dir to be customized?
 - [X] Allow text to be piped-in?
 - [X] Add a build script so binaries can be built in one step
-- [ ] Add date to header of each journal file?
 - [X] Tweak journal file permissions (only accessible to owner by default)
 - [ ] Arbitrary date subcommand?
 - [ ] Jet for lists?
