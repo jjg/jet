@@ -6,12 +6,12 @@ A reliable focused writing tool.
 ![screenshot of jet running in a terminal](images/screenshot.png)
 
 ## Status
-Good enough.  See the TODO section below.
+Jet is close to complete.  This project is evolving into something a bit broader than just Jet, so expect to see more changes soon.
 
 ## Installation
 Download the `jet` binary from the [bin](bin) directory for your architecture/os and put it somewhere in your path.
 
-Alternatively (if you have Go installed), install it with `go install`.
+Alternatively (if you have Go installed), install it with `go install ./cmd/jet/`.`
 
 ## Usage
 1. Open a terminal and type `jet`
