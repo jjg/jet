@@ -44,6 +44,8 @@ Some potential ideas for the future.
 - [X] Tweak journal file permissions (only accessible to owner by default)
 - [ ] Arbitrary date subcommand?
 - [ ] Jet for lists?
+- [ ] Rename this project to reflect the fact that it's more than just Jet now
+- [ ] Refactor-all-the-things
 
 ## Contributing
 This section is at the end because right now it's not intended for anyone other than the author.
