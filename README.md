@@ -3,7 +3,7 @@ Journal EnTry
 
 A reliable focused writing tool.
 
-![screenshot of jet running in a terminal](images/screenshot.png)
+![screenshot of jet running in a terminal](docs/images/screenshot.png)
 
 ## Status
 Jet is close to complete.  This project is evolving into something a bit broader than just Jet, so expect to see more changes soon.
