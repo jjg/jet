@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/term"
-	"io"
 	"io/fs"
 	"os"
 	"time"
@@ -89,27 +88,6 @@ func getInput(interactive bool) []string {
 	return entry
 }
 
-func showEntry(journalDir string, entryName string) {
-	filename := fmt.Sprintf("%s/%s.jet.txt", journalDir, entryName)
-	f, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	r := bufio.NewReader(f)
-	buf := make([]byte, 1024)
-	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
-			panic(err)
-		}
-		if n == 0 {
-			break
-		}
-		fmt.Printf("%s", buf[:n])
-	}
-}
-
 func storeEntry(journalDir string, entryName string, entry []string) {
 
 	// Create or update the file for the specified journal entry.
@@ -151,18 +129,13 @@ func main() {
 		fmt.Println("Journal entries for each day will be stored in a directory")
 		fmt.Println("named 'jet-journal' in your home directory.")
 		fmt.Println("")
-		fmt.Println("usage: jet (help, today, yesterday)")
-		fmt.Println("jet\t\t- Create a new journal entry")
-		fmt.Println("jet help\t- this message")
-		fmt.Println("jet today\t- Show today's journal entries")
-		fmt.Println("jet yesterday\t- Show yesterday's entries")
+		fmt.Println("Usage:")
+		fmt.Println("jet - Create a new journal entry in interactive mode")
+		fmt.Println("cat foo.txt | jet - Create a new journal entry using the output from cat")
 		fmt.Println("")
-	case "today":
-		entryName := t.Format("2006-01-02")
-		showEntry(journalDir, entryName)
-	case "yesterday":
-		entryName := t.Add(-time.Hour * 24).Format("2006-01-02")
-		showEntry(journalDir, entryName)
+		fmt.Println("See also:")
+		fmt.Println("today, yesterday")
+		fmt.Println("")
 	default:
 
 		// If no subcommand is provided, create a new entry.
