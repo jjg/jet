@@ -51,5 +51,5 @@ This section is at the end because right now it's not intended for anyone other 
 ### Guidelines
 * No developers, no users: the programs in here are tools, the people who make them toolmakers, the people who employ them authors, accountants, filmmakers, etc.
 * Each tool is implemented as a single, stand-alone source code file (if it gets too complicated for one file, it should be broken down into separate tools, not source files)
+* Dependencies will be heavily scrutinized; tools should only depend on other tools not modules, shared source files, etc.
 * Changes (PR's, etc.) should be small and simple enough to complete in a day, ideally in a single work session
-*
