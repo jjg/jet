@@ -11,7 +11,7 @@ Good enough.  See the TODO section below.
 ## Installation
 Download the `jet` binary from the [bin](bin) directory for your architecture/os and put it somewhere in your path.
 
-Alternatively (if you have Go installed), install it with `go install`.
+Alternatively (if you have Go installed), install it with `go install ./cmd/jet/`, `go install ./cmd/today/`, etc..
 
 ## Usage
 1. Open a terminal and type `jet`
