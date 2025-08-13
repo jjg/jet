@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/term"
-	"io"
 	"io/fs"
 	"os"
 	"time"
@@ -89,27 +88,6 @@ func getInput(interactive bool) []string {
 	return entry
 }
 
-func showEntry(journalDir string, entryName string) {
-	filename := fmt.Sprintf("%s/%s.jet.txt", journalDir, entryName)
-	f, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	r := bufio.NewReader(f)
-	buf := make([]byte, 1024)
-	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
-			panic(err)
-		}
-		if n == 0 {
-			break
-		}
-		fmt.Printf("%s", buf[:n])
-	}
-}
-
 func storeEntry(journalDir string, entryName string, entry []string) {
 
 	// Create or update the file for the specified journal entry.
@@ -157,12 +135,6 @@ func main() {
 		fmt.Println("jet today\t- Show today's journal entries")
 		fmt.Println("jet yesterday\t- Show yesterday's entries")
 		fmt.Println("")
-	case "today":
-		entryName := t.Format("2006-01-02")
-		showEntry(journalDir, entryName)
-	case "yesterday":
-		entryName := t.Add(-time.Hour * 24).Format("2006-01-02")
-		showEntry(journalDir, entryName)
 	default:
 
 		// If no subcommand is provided, create a new entry.
