@@ -129,11 +129,12 @@ func main() {
 		fmt.Println("Journal entries for each day will be stored in a directory")
 		fmt.Println("named 'jet-journal' in your home directory.")
 		fmt.Println("")
-		fmt.Println("usage: jet (help, today, yesterday)")
-		fmt.Println("jet\t\t- Create a new journal entry")
-		fmt.Println("jet help\t- this message")
-		fmt.Println("jet today\t- Show today's journal entries")
-		fmt.Println("jet yesterday\t- Show yesterday's entries")
+		fmt.Println("Usage:")
+		fmt.Println("jet - Create a new journal entry in interactive mode")
+		fmt.Println("cat foo.txt | jet - Create a new journal entry using the output from cat")
+		fmt.Println("")
+		fmt.Println("See also:")
+		fmt.Println("today, yesterday")
 		fmt.Println("")
 	default:
 
