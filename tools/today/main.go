@@ -3,43 +3,43 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"time"
 )
 
-func getJournalDir() string {
+func main() {
+	today := time.Now()
+	toDate := today.Format("2006-01-02")
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
-	return fmt.Sprintf("%s/jet-journal", home)
-}
+	dataDir := fmt.Sprintf("%s/pouch-data/%s", home, toDate)
 
-func showEntry(journalDir string, entryName string) {
-	filename := fmt.Sprintf("%s/%s.jet.txt", journalDir, entryName)
-	f, err := os.Open(filename)
+	fmt.Printf("Activity for %s\n", toDate)
+
+	// Get a list of files in the data directory.
+	files, err := os.ReadDir(dataDir)
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
-	r := bufio.NewReader(f)
-	buf := make([]byte, 1024)
-	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
+
+	// Display each file.
+	for _, file := range files {
+		filename := file.Name()
+		fmt.Printf("\n--- %s ---\n", filename[:3])
+		f, err := os.Open(fmt.Sprintf("%s/%s", dataDir, filename))
+		if err != nil {
 			panic(err)
 		}
-		if n == 0 {
-			break
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+		for {
+			more := scanner.Scan()
+			if !more {
+				break
+			}
+			fmt.Println(scanner.Text())
 		}
-		fmt.Printf("%s", buf[:n])
 	}
-}
-
-func main() {
-	t := time.Now()
-	journalDir := getJournalDir()
-	entryName := t.Format("2006-01-02")
-	showEntry(journalDir, entryName)
 }
