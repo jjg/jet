@@ -4,12 +4,18 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io"
+	//"io"
 	"io/fs"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
+
+type listItem struct {
+	status      string
+	description string
+}
 
 func getDataDir(t time.Time) string {
 
@@ -40,7 +46,7 @@ func storeList(list []listItem) {
 
 	// Create or update the file for the specified journal entry.
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
-	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0660)
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
 		panic(err)
 	}
@@ -60,32 +66,32 @@ func storeList(list []listItem) {
 	w.Flush()
 }
 
-func getList(sweetDir string, dayDir string) {
-	filename := fmt.Sprintf("%s/%s/hop.txt", sweetDir, dayDir)
+func loadList(t time.Time) []listItem {
+	dataDir := getDataDir(t)
+	filename := fmt.Sprintf("%s/hop.txt", dataDir)
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	r := bufio.NewReader(f)
-	buf := make([]byte, 1024)
+
+	var list []listItem
+	scanner := bufio.NewScanner(f)
 	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
-			panic(err)
-		}
-		if n == 0 {
+		more := scanner.Scan()
+		itemText := scanner.Text()
+
+		if !more {
 			break
 		}
 
-		// TODO: Load list instead of just printing it.
-		fmt.Printf("%s", buf[:n])
+		// TODO: There must be a better way to do this...
+		itemWords := strings.Fields(itemText)
+		item := listItem{status: itemWords[0], description: strings.Join(itemWords[1:], " ")}
+		list = append(list, item)
 	}
-}
 
-type listItem struct {
-	status      string
-	description string
+	return list
 }
 
 func displayList(list []listItem) {
@@ -96,25 +102,13 @@ func displayList(list []listItem) {
 
 func main() {
 
-	fmt.Println("this is hop")
-
-	//t := time.Now()
-	//todayFile := getListFile(t)
-
-	//sweetDir := getSweetDir()
-	//dayDir := t.Format("2006-01-02")
-
-	//getList(sweetDir, dayDir)
-
 	// TODO: Import any incomplete items from yesterday's list.
-	// TODO: Try to open today's file and if it doesn't exist, create it.
 
-	// TODO: Load the list
+	// Load the list
 	// TODO: Should this be a map?
-	var list []listItem
-
-	//item := listItem{status: "*", description: "Make the hop tool"}
-	//list = append(list, item)
+	//var list []listItem
+	t := time.Now()
+	list := loadList(t)
 
 	// Display the list
 	displayList(list)
