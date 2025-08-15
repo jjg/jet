@@ -17,31 +17,25 @@ type listItem struct {
 }
 
 func getDataDir(t time.Time) string {
-
 	// Make sure we have a working data dir.
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
 	dataDir := fmt.Sprintf("%s/pouch-data/%s", home, t.Format("2006-01-02"))
-
 	// Check if data dir exists and if not, create it.
 	_, err = os.Stat(dataDir)
 	if errors.Is(err, fs.ErrNotExist) {
-
 		// Try to create the datadir.
 		if err := os.MkdirAll(dataDir, 0700); err != nil {
 			panic(err)
 		}
 	}
-
 	return dataDir
 }
 
 func storeList(list []listItem, t time.Time) {
-
 	dataDir := getDataDir(t)
-
 	// Create or overwrite the file.
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
 	f, err := os.Create(filename)
@@ -50,7 +44,6 @@ func storeList(list []listItem, t time.Time) {
 		panic(err)
 	}
 	defer f.Close()
-
 	// Write it to disk.
 	w := bufio.NewWriter(f)
 	for _, item := range list {
@@ -66,14 +59,12 @@ func storeList(list []listItem, t time.Time) {
 }
 
 func loadList(t time.Time) []listItem {
-	// TODO: Should this be a map?
 	var list []listItem
-
 	dataDir := getDataDir(t)
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
 	f, err := os.Open(filename)
 	if err != nil {
-		// Return an empty list if no file exists.
+		// It's OK to return an empty list if no file exists.
 		return list
 	}
 	defer f.Close()
@@ -82,11 +73,9 @@ func loadList(t time.Time) []listItem {
 	for {
 		more := scanner.Scan()
 		itemText := scanner.Text()
-
 		if !more {
 			break
 		}
-
 		// TODO: There must be a better way to do this...
 		itemWords := strings.Fields(itemText)
 		if len(itemWords) > 1 {
@@ -94,7 +83,6 @@ func loadList(t time.Time) []listItem {
 			list = append(list, item)
 		}
 	}
-
 	return list
 }
 
@@ -138,7 +126,7 @@ func main() {
 	list := append(incomplete, loadList(today)...)
 	storeList(list, today)
 
-	// Display the list
+	// Display it.
 	displayList(list)
 
 	// Prompt for command (add/remove/complete/quit)
@@ -151,8 +139,8 @@ func main() {
 		if cmd == "a" || cmd == "r" || cmd == "c" {
 			switch cmd {
 			case "a":
-
 				// Add an item to the list
+				// TODO: Consider making this the default action (just start typing).
 				// TODO: Don't add duplicate items to the list.
 				fmt.Print("> ")
 				item := listItem{}
@@ -160,13 +148,9 @@ func main() {
 				scanner.Scan()
 				item.description = scanner.Text()
 				list = append(list, item)
-
-				// Save the list
 				storeList(list, today)
-
 				displayList(list)
 			case "r":
-
 				// Remove an item from the list
 				fmt.Print("Item number to remove > ")
 				scanner.Scan()
@@ -174,14 +158,11 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
-
-				// Adjust number for offset
 				itemNumber--
 				list = append(list[:itemNumber], list[itemNumber+1:]...)
 				storeList(list, today)
 				displayList(list)
 			case "c":
-
 				// Mark an item completed
 				// TODO: This item selection logic should go in its own function.
 				fmt.Print("Item number to complete > ")
@@ -190,8 +171,6 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
-
-				// Adjust number for offset
 				itemNumber--
 				list[itemNumber].status = "X"
 				storeList(list, today)
