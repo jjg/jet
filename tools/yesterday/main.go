@@ -14,9 +14,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dataDir := fmt.Sprintf("%s/pouch-data/%s", home, yesterDate)
+	dataDir := fmt.Sprintf("%s/🦘pouch-data/%s", home, yesterDate)
 
-	fmt.Printf("Activity for %s\n", yesterDate)
+	fmt.Printf("\nActivity for %s\n", yesterDate)
 
 	// Get a list of files in the data directory.
 	files, err := os.ReadDir(dataDir)
@@ -27,7 +27,8 @@ func main() {
 	// Display each file.
 	for _, file := range files {
 		filename := file.Name()
-		fmt.Printf("\n--- %s ---\n", filename[:3])
+
+		fmt.Printf("\n--- %s ---\n", filename)
 		f, err := os.Open(fmt.Sprintf("%s/%s", dataDir, filename))
 		if err != nil {
 			panic(err)

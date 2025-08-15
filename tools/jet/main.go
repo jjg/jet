@@ -16,7 +16,7 @@ func getDataDir(t time.Time) string {
 	if err != nil {
 		panic(err)
 	}
-	dataDir := fmt.Sprintf("%s/pouch-data/%s", home, t.Format("2006-01-02"))
+	dataDir := fmt.Sprintf("%s/🦘pouch-data/%s", home, t.Format("2006-01-02"))
 	// Check if data dir exists and if not, create it.
 	_, err = os.Stat(dataDir)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -31,7 +31,7 @@ func getDataDir(t time.Time) string {
 func storeEntry(entry []string, t time.Time) {
 	dataDir := getDataDir(t)
 	// Create or update the file for the specified journal entry.
-	filename := fmt.Sprintf("%s/jet.txt", dataDir)
+	filename := fmt.Sprintf("%s/📓.jet.txt", dataDir)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
 		panic(err)

@@ -20,3 +20,10 @@ GOOS=linux GOARCH=arm go build -o bin/yesterday-linux-arm ./tools/yesterday/
 GOOS=darwin GOARCH=amd64 go build -o bin/yesterday-darwin-amd64 ./tools/yesterday/
 GOOS=darwin GOARCH=arm64 go build -o bin/yesterday-darwin-arm64 ./tools/yesterday/
 GOOS=windows GOARCH=amd64 go build -o bin/yesterday-windows-amd64 ./tools/yesterday/
+# build hop
+GOOS=linux GOARCH=amd64 go build -o bin/hop-linux-amd64 ./tools/hop/
+GOOS=linux GOARCH=arm64 go build -o bin/hop-linux-arm64 ./tools/hop/
+GOOS=linux GOARCH=arm go build -o bin/hop-linux-arm ./tools/hop/
+GOOS=darwin GOARCH=amd64 go build -o bin/hop-darwin-amd64 ./tools/hop/
+GOOS=darwin GOARCH=arm64 go build -o bin/hop-darwin-arm64 ./tools/hop/
+GOOS=windows GOARCH=amd64 go build -o bin/hop-windows-amd64 ./tools/hop/
