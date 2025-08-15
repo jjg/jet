@@ -44,7 +44,7 @@ func storeList(list []listItem) {
 	// The only list we currently store is today's list
 	dataDir := getDataDir(time.Now())
 
-	// Create or update the file for the specified journal entry.
+	// Create or overwrite the file.
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
@@ -75,6 +75,7 @@ func loadList(t time.Time) []listItem {
 	}
 	defer f.Close()
 
+	// TODO: Should this be a map?
 	var list []listItem
 	scanner := bufio.NewScanner(f)
 	for {
@@ -87,8 +88,10 @@ func loadList(t time.Time) []listItem {
 
 		// TODO: There must be a better way to do this...
 		itemWords := strings.Fields(itemText)
-		item := listItem{status: itemWords[0], description: strings.Join(itemWords[1:], " ")}
-		list = append(list, item)
+		if len(itemWords) > 1 {
+			item := listItem{status: itemWords[0], description: strings.Join(itemWords[1:], " ")}
+			list = append(list, item)
+		}
 	}
 
 	return list
@@ -104,9 +107,7 @@ func main() {
 
 	// TODO: Import any incomplete items from yesterday's list.
 
-	// Load the list
-	// TODO: Should this be a map?
-	//var list []listItem
+	// Load today's list
 	t := time.Now()
 	list := loadList(t)
 
@@ -145,6 +146,7 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+
 				// Adjust number for offset
 				itemNumber--
 				list = append(list[:itemNumber], list[itemNumber+1:]...)
@@ -159,6 +161,7 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+
 				// Adjust number for offset
 				itemNumber--
 				list[itemNumber].status = "X"
