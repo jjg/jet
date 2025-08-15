@@ -22,7 +22,7 @@ func getDataDir(t time.Time) string {
 	if err != nil {
 		panic(err)
 	}
-	dataDir := fmt.Sprintf("%s/pouch-data/%s", home, t.Format("2006-01-02"))
+	dataDir := fmt.Sprintf("%s/🦘pouch-data/%s", home, t.Format("2006-01-02"))
 	// Check if data dir exists and if not, create it.
 	_, err = os.Stat(dataDir)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -37,7 +37,7 @@ func getDataDir(t time.Time) string {
 func storeList(list []listItem, t time.Time) {
 	dataDir := getDataDir(t)
 	// Create or overwrite the file.
-	filename := fmt.Sprintf("%s/hop.txt", dataDir)
+	filename := fmt.Sprintf("%s/🐇.hop.txt", dataDir)
 	f, err := os.Create(filename)
 	// TODO: Set permissions on file to owner only.
 	if err != nil {
@@ -61,7 +61,7 @@ func storeList(list []listItem, t time.Time) {
 func loadList(t time.Time) []listItem {
 	var list []listItem
 	dataDir := getDataDir(t)
-	filename := fmt.Sprintf("%s/hop.txt", dataDir)
+	filename := fmt.Sprintf("%s/🐇.hop.txt", dataDir)
 	f, err := os.Open(filename)
 	if err != nil {
 		// It's OK to return an empty list if no file exists.
