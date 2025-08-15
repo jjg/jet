@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	//"io"
 	"io/fs"
 	"os"
 	"strconv"
@@ -39,14 +38,14 @@ func getDataDir(t time.Time) string {
 	return dataDir
 }
 
-func storeList(list []listItem) {
+func storeList(list []listItem, t time.Time) {
 
-	// The only list we currently store is today's list
-	dataDir := getDataDir(time.Now())
+	dataDir := getDataDir(t)
 
 	// Create or overwrite the file.
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0660)
+	f, err := os.Create(filename)
+	// TODO: Set permissions on file to owner only.
 	if err != nil {
 		panic(err)
 	}
@@ -67,16 +66,18 @@ func storeList(list []listItem) {
 }
 
 func loadList(t time.Time) []listItem {
+	// TODO: Should this be a map?
+	var list []listItem
+
 	dataDir := getDataDir(t)
 	filename := fmt.Sprintf("%s/hop.txt", dataDir)
 	f, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		// Return an empty list if no file exists.
+		return list
 	}
 	defer f.Close()
 
-	// TODO: Should this be a map?
-	var list []listItem
 	scanner := bufio.NewScanner(f)
 	for {
 		more := scanner.Scan()
@@ -97,6 +98,26 @@ func loadList(t time.Time) []listItem {
 	return list
 }
 
+func getCompleted(list []listItem) []listItem {
+	var completed []listItem
+	for _, item := range list {
+		if item.status == "X" {
+			completed = append(completed, item)
+		}
+	}
+	return completed
+}
+
+func getIncomplete(list []listItem) []listItem {
+	var incomplete []listItem
+	for _, item := range list {
+		if item.status == "*" {
+			incomplete = append(incomplete, item)
+		}
+	}
+	return incomplete
+}
+
 func displayList(list []listItem) {
 	for i, item := range list {
 		fmt.Printf("%d. %s %s\n", i+1, item.status, item.description)
@@ -105,11 +126,17 @@ func displayList(list []listItem) {
 
 func main() {
 
-	// TODO: Import any incomplete items from yesterday's list.
+	today := time.Now()
+
+	// Import any incomplete items from yesterday's list.
+	yesterday := today.Add(-time.Hour * 24)
+	completed := getCompleted(loadList(yesterday))
+	incomplete := getIncomplete(loadList(yesterday))
+	storeList(completed, yesterday)
 
 	// Load today's list
-	t := time.Now()
-	list := loadList(t)
+	list := append(incomplete, loadList(today)...)
+	storeList(list, today)
 
 	// Display the list
 	displayList(list)
@@ -126,6 +153,7 @@ func main() {
 			case "a":
 
 				// Add an item to the list
+				// TODO: Don't add duplicate items to the list.
 				fmt.Print("> ")
 				item := listItem{}
 				item.status = "*"
@@ -134,7 +162,7 @@ func main() {
 				list = append(list, item)
 
 				// Save the list
-				storeList(list)
+				storeList(list, today)
 
 				displayList(list)
 			case "r":
@@ -150,6 +178,7 @@ func main() {
 				// Adjust number for offset
 				itemNumber--
 				list = append(list[:itemNumber], list[itemNumber+1:]...)
+				storeList(list, today)
 				displayList(list)
 			case "c":
 
@@ -165,6 +194,7 @@ func main() {
 				// Adjust number for offset
 				itemNumber--
 				list[itemNumber].status = "X"
+				storeList(list, today)
 				displayList(list)
 			}
 		}
